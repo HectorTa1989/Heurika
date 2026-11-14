@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDisplayName</key>
+	<string>Heurika</string>
+	<key>CFBundleName</key>
+	<string>Heurika</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
+	<!-- Loose resource files flatten to the bundle root by default, so these
+	     are filenames only, not "Fonts/PlayfairDisplay-Regular.ttf". If you
+	     switch Resources/Fonts to a folder reference (blue folder) in Xcode,
+	     update these paths to match. -->
+	<key>UIAppFonts</key>
+	<array>
+		<string>PlayfairDisplay-Regular.ttf</string>
+		<string>PlayfairDisplay-SemiBold.ttf</string>
+		<string>PlayfairDisplay-Bold.ttf</string>
+		<string>PlayfairDisplay-Black.ttf</string>
+		<string>Lora-Regular.ttf</string>
+		<string>Lora-Medium.ttf</string>
+		<string>Lora-SemiBold.ttf</string>
+		<string>Lora-Bold.ttf</string>
+		<string>Lora-Italic.ttf</string>
+	</array>
+
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+	</dict>
+
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
+
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+
+	<!-- Production values are injected by build settings. -->
+	<key>HeurikaRevenueCatAPIKey</key>
+	<string>$(HEURIKA_REVENUECAT_API_KEY)</string>
+	<key>HeurikaPrivacyPolicyURL</key>
+	<string>$(HEURIKA_PRIVACY_POLICY_URL)</string>
+	<key>HeurikaTermsOfUseURL</key>
+	<string>$(HEURIKA_TERMS_OF_USE_URL)</string>
+	<key>HeurikaSupportURL</key>
+	<string>$(HEURIKA_SUPPORT_URL)</string>
+</dict>
+</plist>

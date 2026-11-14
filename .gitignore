@@ -1,0 +1,26 @@
+# XcodeGen-generated project (regenerate with `xcodegen generate`)
+*.xcodeproj
+*.xcworkspace
+
+# Xcode
+xcuserdata/
+DerivedData/
+*.xcuserstate
+*.xcscmblueprint
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/HeurikaCore/.build/
+
+# CocoaPods (unused here, but harmless to ignore)
+Pods/
+
+# macOS
+.DS_Store
+
+# Secrets — never commit real keys even though the code only reads them from
+# Keychain at runtime; this guards against anyone pasting one into a debug
+# constant during local testing.
+*.xcconfig.local
+Secrets.swift

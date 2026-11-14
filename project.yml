@@ -1,0 +1,94 @@
+name: Heurika
+options:
+  bundleIdPrefix: com.hectorta1989
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    TARGETED_DEVICE_FAMILY: "1" # iPhone only for v1 — see README "Deliberate scope cuts"
+    GENERATE_INFOPLIST_FILE: NO
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    # Supply these in an uncommitted xcconfig or CI/App Store build settings.
+    # Empty values are treated as unconfigured; the app never falls back to
+    # fake example.com links or a template purchase key.
+    HEURIKA_REVENUECAT_API_KEY: ""
+    HEURIKA_PRIVACY_POLICY_URL: ""
+    HEURIKA_TERMS_OF_USE_URL: ""
+    HEURIKA_SUPPORT_URL: ""
+
+packages:
+  HeurikaCore:
+    path: Packages/HeurikaCore
+  RevenueCat:
+    # RevenueCat's official SPM mirror — faster resolution than the CocoaPods-era repo.
+    url: https://github.com/RevenueCat/purchases-ios-spm.git
+    from: "5.0.0" # verify latest at https://github.com/RevenueCat/purchases-ios/releases before shipping
+
+targets:
+  Heurika:
+    type: application
+    platform: iOS
+    sources:
+      - path: Heurika
+    info:
+      path: Heurika/Resources/Info.plist
+    entitlements:
+      path: Heurika/Resources/Heurika.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.hectorta1989.heurika
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)com.hectorta1989.heurika.shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hectorta1989.heurika
+        PRODUCT_NAME: Heurika
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies:
+      - target: HeurikaKeyboard
+        embed: true
+      - package: HeurikaCore
+        product: HeurikaCore
+      - package: RevenueCat
+        product: RevenueCat
+
+  HeurikaKeyboard:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: HeurikaKeyboard
+    info:
+      path: HeurikaKeyboard/Info.plist
+    entitlements:
+      path: HeurikaKeyboard/HeurikaKeyboard.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.hectorta1989.heurika
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)com.hectorta1989.heurika.shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hectorta1989.heurika.keyboard
+        PRODUCT_NAME: HeurikaKeyboard
+        SKIP_INSTALL: YES
+    dependencies:
+      - package: HeurikaCore
+        product: HeurikaCore
+
+# NOTE on testing: HeurikaCoreTests lives inside the local Swift package
+# (Packages/HeurikaCore) rather than as a native Xcode test target, so it's
+# deliberately not wired into a scheme here — package-test scheme syntax
+# varies across XcodeGen versions and a wrong reference can break `xcodegen
+# generate` outright. Xcode surfaces package tests in the Test Navigator
+# automatically once the project is open; the always-reliable path is
+# `cd Packages/HeurikaCore && swift test`. See README → Testing.
