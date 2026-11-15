@@ -26,8 +26,8 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 45
     env:
-      APP_BUNDLE_ID: com.hectorta1989.heurika
-      KEYBOARD_BUNDLE_ID: com.hectorta1989.heurika.keyboard
+      APP_BUNDLE_ID: com.heurika.app
+      KEYBOARD_BUNDLE_ID: com.heurika.app.keyboard
       APP_PROFILE_NAME: ${{ secrets.HEURIKA_APP_PROFILE_NAME }}
       KEYBOARD_PROFILE_NAME: ${{ secrets.HEURIKA_KEYBOARD_PROFILE_NAME }}
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}

@@ -1,6 +1,6 @@
 name: Heurika
 options:
-  bundleIdPrefix: com.hectorta1989
+  bundleIdPrefix: com.heurika
   deploymentTarget:
     iOS: "17.0"
   createIntermediateGroups: true
@@ -46,12 +46,12 @@ targets:
       path: Heurika/Resources/Heurika.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.com.hectorta1989.heurika
+          - group.com.heurika.app
         keychain-access-groups:
-          - $(AppIdentifierPrefix)com.hectorta1989.heurika.shared
+          - $(AppIdentifierPrefix)com.heurika.app.shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.hectorta1989.heurika
+        PRODUCT_BUNDLE_IDENTIFIER: com.heurika.app
         PRODUCT_NAME: Heurika
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_STYLE: Manual
@@ -76,12 +76,12 @@ targets:
       path: HeurikaKeyboard/HeurikaKeyboard.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.com.hectorta1989.heurika
+          - group.com.heurika.app
         keychain-access-groups:
-          - $(AppIdentifierPrefix)com.hectorta1989.heurika.shared
+          - $(AppIdentifierPrefix)com.heurika.app.shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.hectorta1989.heurika.keyboard
+        PRODUCT_BUNDLE_IDENTIFIER: com.heurika.app.keyboard
         PRODUCT_NAME: HeurikaKeyboard
         SKIP_INSTALL: YES
         CODE_SIGN_STYLE: Manual

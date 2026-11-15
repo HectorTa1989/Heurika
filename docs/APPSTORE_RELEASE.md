@@ -29,8 +29,8 @@ Add these under repository Settings → Secrets and variables → Actions:
 
 The app and extension profiles must match these bundle IDs:
 
-- `com.hectorta1989.heurika`
-- `com.hectorta1989.heurika.keyboard`
+- `com.heurika.app`
+- `com.heurika.app.keyboard`
 
 ## Running a release
 
