@@ -64,20 +64,26 @@ jobs:
             fi
           done
 
-      - name: Select Xcode 26 or newer
+      - name: Select Xcode with an installed iPhoneOS SDK
         run: |
           set -euo pipefail
-          if [[ -d /Applications/Xcode_26.0.app ]]; then
-            sudo xcode-select -s /Applications/Xcode_26.0.app
-          elif [[ -d /Applications/Xcode_26.1.app ]]; then
-            sudo xcode-select -s /Applications/Xcode_26.1.app
-          fi
-          xcodebuild -version
-          major="$(xcodebuild -version | awk '/^Xcode / { split($2, v, "."); print v[1] }')"
-          if [[ "${major}" -lt 26 ]]; then
-            echo "This release requires Xcode 26 or newer." >&2
+          selected=""
+          while IFS= read -r candidate; do
+            if compgen -G "$candidate/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS*.sdk" > /dev/null; then
+              selected="$candidate"
+              break
+            fi
+          done < <(find /Applications -maxdepth 1 -type d -name 'Xcode*.app' | sort -Vr)
+          if [[ -z "$selected" ]]; then
+            echo "No Xcode with an installed iPhoneOS SDK found" >&2
+            xcodebuild -showsdks || true
             exit 1
           fi
+          sudo xcode-select -s "$selected"
+          export DEVELOPER_DIR="$selected/Contents/Developer"
+          echo "DEVELOPER_DIR=$DEVELOPER_DIR" >> "$GITHUB_ENV"
+          xcodebuild -version
+          xcodebuild -showsdks | grep -E 'iOS|iphoneos'
 
       - name: Install XcodeGen
         run: |
