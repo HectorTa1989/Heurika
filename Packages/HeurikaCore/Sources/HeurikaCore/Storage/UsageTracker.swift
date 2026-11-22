@@ -25,34 +25,34 @@ public final class UsageTracker: @unchecked Sendable {
     public func remainingFreeActionsToday() -> Int {
         lock.lock(); defer { lock.unlock() }
         rolloverIfNeeded()
-        let used = defaults.integer(forKey: countKey)
+        let used = defaults.integer(forKey: Self.countKey)
         return max(0, HeurikaConstants.freeDailyDeedLimit - used)
     }
 
     public func recordUsage() {
         lock.lock(); defer { lock.unlock() }
         rolloverIfNeeded()
-        let used = defaults.integer(forKey: countKey)
-        defaults.set(used + 1, forKey: countKey)
+        let used = defaults.integer(forKey: Self.countKey)
+        defaults.set(used + 1, forKey: Self.countKey)
     }
 
     /// Exposed for tests / debug screens; not used in the main flow.
     public func reset() {
         lock.lock(); defer { lock.unlock() }
-        defaults.removeObject(forKey: countKey)
-        defaults.removeObject(forKey: dateKey)
+        defaults.removeObject(forKey: Self.countKey)
+        defaults.removeObject(forKey: Self.dateKey)
     }
 
     private func rolloverIfNeeded() {
         let today = calendar.startOfDay(for: Date())
-        if let storedInterval = defaults.object(forKey: dateKey) as? Double {
+        if let storedInterval = defaults.object(forKey: Self.dateKey) as? Double {
             let storedDay = calendar.startOfDay(for: Date(timeIntervalSince1970: storedInterval))
             if storedDay != today {
-                defaults.set(0, forKey: countKey)
-                defaults.set(today.timeIntervalSince1970, forKey: dateKey)
+                defaults.set(0, forKey: Self.countKey)
+                defaults.set(today.timeIntervalSince1970, forKey: Self.dateKey)
             }
         } else {
-            defaults.set(today.timeIntervalSince1970, forKey: dateKey)
+            defaults.set(today.timeIntervalSince1970, forKey: Self.dateKey)
         }
     }
 }
