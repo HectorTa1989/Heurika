@@ -205,13 +205,14 @@ jobs:
           from pathlib import Path
 
           app_info = plistlib.loads((Path(os.environ["RUNNER_TEMP"]) / "heurika-app-info.plist").read_bytes())
+          assert app_info.get("UIDeviceFamily") == [1], f"Expected iPhone-only IPA, got UIDeviceFamily={app_info.get('UIDeviceFamily')}"
           required = {
               "UIInterfaceOrientationPortrait",
               "UIInterfaceOrientationPortraitUpsideDown",
               "UIInterfaceOrientationLandscapeLeft",
               "UIInterfaceOrientationLandscapeRight",
           }
-          assert required.issubset(set(app_info["UISupportedInterfaceOrientations"])), "Missing iPad multitasking orientations"
+          assert required.issubset(set(app_info["UISupportedInterfaceOrientations"])), "Missing supported interface orientations"
           PY
           /usr/libexec/PlistBuddy -c 'Print :NSExtension:NSExtensionPointIdentifier' "${RUNNER_TEMP}/heurika-keyboard-info.plist" | grep -Fx 'com.apple.keyboard-service'
 
