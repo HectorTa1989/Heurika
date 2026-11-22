@@ -199,7 +199,20 @@ jobs:
           unzip -p "${ipa_path}" Payload/Heurika.app/Info.plist > "${RUNNER_TEMP}/heurika-app-info.plist"
           unzip -p "${ipa_path}" Payload/Heurika.app/PlugIns/HeurikaKeyboard.appex/Info.plist > "${RUNNER_TEMP}/heurika-keyboard-info.plist"
           /usr/libexec/PlistBuddy -c 'Print :UILaunchScreen' "${RUNNER_TEMP}/heurika-app-info.plist" >/dev/null
-          /usr/libexec/PlistBuddy -c 'Print :UISupportedInterfaceOrientations:0' "${RUNNER_TEMP}/heurika-app-info.plist" >/dev/null
+          python3 - <<'PY'
+          import os
+          import plistlib
+          from pathlib import Path
+
+          app_info = plistlib.loads((Path(os.environ["RUNNER_TEMP"]) / "heurika-app-info.plist").read_bytes())
+          required = {
+              "UIInterfaceOrientationPortrait",
+              "UIInterfaceOrientationPortraitUpsideDown",
+              "UIInterfaceOrientationLandscapeLeft",
+              "UIInterfaceOrientationLandscapeRight",
+          }
+          assert required.issubset(set(app_info["UISupportedInterfaceOrientations"])), "Missing iPad multitasking orientations"
+          PY
           /usr/libexec/PlistBuddy -c 'Print :NSExtension:NSExtensionPointIdentifier' "${RUNNER_TEMP}/heurika-keyboard-info.plist" | grep -Fx 'com.apple.keyboard-service'
 
       - name: Upload the IPA to App Store Connect
