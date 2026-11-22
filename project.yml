@@ -40,8 +40,6 @@ targets:
     platform: iOS
     sources:
       - path: Heurika
-    info:
-      path: Heurika/Resources/Info.plist
     entitlements:
       path: Heurika/Resources/Heurika.entitlements
       properties:
@@ -53,6 +51,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.heurika.app
         PRODUCT_NAME: Heurika
+        INFOPLIST_FILE: Heurika/Resources/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_STYLE: Manual
         CODE_SIGN_IDENTITY: "Apple Distribution"
@@ -72,8 +71,6 @@ targets:
     platform: iOS
     sources:
       - path: HeurikaKeyboard
-    info:
-      path: HeurikaKeyboard/Info.plist
     entitlements:
       path: HeurikaKeyboard/HeurikaKeyboard.entitlements
       properties:
@@ -85,6 +82,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.heurika.app.keyboard
         PRODUCT_NAME: HeurikaKeyboard
+        INFOPLIST_FILE: HeurikaKeyboard/Info.plist
         SKIP_INSTALL: YES
         CODE_SIGN_STYLE: Manual
         CODE_SIGN_IDENTITY: "Apple Distribution"

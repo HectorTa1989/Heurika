@@ -122,6 +122,14 @@ jobs:
       - name: Generate the Xcode project
         run: xcodegen generate
 
+      - name: Verify app and keyboard Info.plist files
+        run: |
+          set -euo pipefail
+          plutil -lint Heurika/Resources/Info.plist HeurikaKeyboard/Info.plist
+          /usr/libexec/PlistBuddy -c 'Print :UILaunchScreen' Heurika/Resources/Info.plist >/dev/null
+          /usr/libexec/PlistBuddy -c 'Print :UISupportedInterfaceOrientations:0' Heurika/Resources/Info.plist >/dev/null
+          /usr/libexec/PlistBuddy -c 'Print :NSExtension:NSExtensionPointIdentifier' HeurikaKeyboard/Info.plist | grep -Fx 'com.apple.keyboard-service'
+
       - name: Verify release signing settings
         run: |
           set -euo pipefail
@@ -182,6 +190,17 @@ jobs:
             -archivePath "${PWD}/build/Heurika.xcarchive" \
             -exportPath "${PWD}/build/export" \
             -exportOptionsPlist "${PWD}/build/ExportOptions.plist"
+
+      - name: Verify exported IPA metadata
+        run: |
+          set -euo pipefail
+          ipa_path="$(find build/export -maxdepth 1 -name '*.ipa' -print -quit)"
+          [[ -n "${ipa_path}" ]] || { echo 'IPA was not exported' >&2; exit 1; }
+          unzip -p "${ipa_path}" Payload/Heurika.app/Info.plist > "${RUNNER_TEMP}/heurika-app-info.plist"
+          unzip -p "${ipa_path}" Payload/Heurika.app/PlugIns/HeurikaKeyboard.appex/Info.plist > "${RUNNER_TEMP}/heurika-keyboard-info.plist"
+          /usr/libexec/PlistBuddy -c 'Print :UILaunchScreen' "${RUNNER_TEMP}/heurika-app-info.plist" >/dev/null
+          /usr/libexec/PlistBuddy -c 'Print :UISupportedInterfaceOrientations:0' "${RUNNER_TEMP}/heurika-app-info.plist" >/dev/null
+          /usr/libexec/PlistBuddy -c 'Print :NSExtension:NSExtensionPointIdentifier' "${RUNNER_TEMP}/heurika-keyboard-info.plist" | grep -Fx 'com.apple.keyboard-service'
 
       - name: Upload the IPA to App Store Connect
         env:
