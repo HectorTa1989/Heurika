@@ -133,7 +133,7 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
-        let language = textDocumentProxy.primaryLanguage ?? "en_US"
+        let language = textDocumentProxy.documentInputMode?.primaryLanguage ?? primaryLanguage ?? "en-US"
         let range = NSRange(location: 0, length: (word as NSString).length)
         var candidates: [String] = []
         let misspelled = textChecker.rangeOfMisspelledWord(
@@ -148,7 +148,7 @@ final class KeyboardViewController: UIInputViewController {
         }
         candidates.append(contentsOf: textChecker.completions(forPartialWordRange: range, in: word, language: language) ?? [])
         candidates.append(contentsOf: supplementaryLexiconEntries.compactMap { entry in
-            entry.userInput.localizedCaseInsensitiveHasPrefix(word) ? entry.documentText : nil
+            entry.userInput.range(of: word, options: [.anchored, .caseInsensitive, .diacriticInsensitive]) != nil ? entry.documentText : nil
         })
 
         var seen = Set<String>()
