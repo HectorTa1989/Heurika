@@ -53,8 +53,8 @@ final class PaywallViewModel: ObservableObject {
         switch result {
         case .success:
             return true
-        case .failure(let message):
-            if !message.isEmpty { errorMessage = message }
+        case .failure(let failure):
+            if !failure.message.isEmpty { errorMessage = failure.message }
             return false
         }
     }
@@ -67,8 +67,8 @@ final class PaywallViewModel: ObservableObject {
         switch result {
         case .success:
             return purchasesManager.isPro
-        case .failure(let message):
-            errorMessage = message
+        case .failure(let failure):
+            errorMessage = failure.message
             return false
         }
     }

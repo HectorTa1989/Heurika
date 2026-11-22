@@ -2,6 +2,14 @@ import Foundation
 import RevenueCat
 import HeurikaCore
 
+public struct PurchaseFailure: Error {
+    public let message: String
+
+    public init(message: String) {
+        self.message = message
+    }
+}
+
 /// The only place in the whole codebase that imports RevenueCat. Everything
 /// else — including the keyboard extension — reads `SubscriptionStatus` out
 /// of the shared App Group, which this manager keeps in sync. Keeping
@@ -61,31 +69,31 @@ public final class PurchasesManager: NSObject, ObservableObject {
         }
     }
 
-    public func purchase(package: Package) async -> Result<Void, String> {
+    public func purchase(package: Package) async -> Result<Void, PurchaseFailure> {
         guard RevenueCatConfig.apiKey != nil else {
-            return .failure("Subscriptions are not configured for this build.")
+            return .failure(PurchaseFailure(message: "Subscriptions are not configured for this build."))
         }
         do {
             let result = try await Purchases.shared.purchase(package: package)
             apply(result.customerInfo)
             return .success(())
         } catch let error as ErrorCode where error == .purchaseCancelledError {
-            return .failure("") // empty message = silently dismiss, this isn't a real error
+            return .failure(PurchaseFailure(message: "")) // empty message = silently dismiss, this isn't a real error
         } catch {
-            return .failure(error.localizedDescription)
+            return .failure(PurchaseFailure(message: error.localizedDescription))
         }
     }
 
-    public func restorePurchases() async -> Result<Void, String> {
+    public func restorePurchases() async -> Result<Void, PurchaseFailure> {
         guard RevenueCatConfig.apiKey != nil else {
-            return .failure("Subscriptions are not configured for this build.")
+            return .failure(PurchaseFailure(message: "Subscriptions are not configured for this build."))
         }
         do {
             let info = try await Purchases.shared.restorePurchases()
             apply(info)
             return .success(())
         } catch {
-            return .failure(error.localizedDescription)
+            return .failure(PurchaseFailure(message: error.localizedDescription))
         }
     }
 
