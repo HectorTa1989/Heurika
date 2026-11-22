@@ -245,7 +245,8 @@ jobs:
           fastlane pilot upload \
             --ipa "${ipa_path}" \
             --api_key_path "${RUNNER_TEMP}/fastlane/api_key.json" \
-            --skip_waiting_for_build_processing true
+            --skip_waiting_for_build_processing false \
+            --skip_submission true
 
       - name: Submit the uploaded build for App Review
         if: ${{ inputs.submit_for_review == true }}
@@ -273,9 +274,11 @@ jobs:
           (temp / "fastlane" / "api_key.json").write_text(json.dumps(payload))
           PY
           sudo gem install fastlane --no-document
-          fastlane deliver \
-            --submit_for_review true \
+          fastlane deliver submit_build \
             --api_key_path "${RUNNER_TEMP}/fastlane/api_key.json" \
+            --app_identifier "${APP_BUNDLE_ID}" \
+            --build_number "${GITHUB_RUN_NUMBER}" \
+            --skip_binary_upload true \
             --skip_metadata true \
             --skip_screenshots true \
             --force
