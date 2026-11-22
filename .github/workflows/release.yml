@@ -193,14 +193,20 @@ jobs:
           key_path="${RUNNER_TEMP}/appstoreconnect-api-key.p8"
           echo "${ASC_KEY_BASE64}" | base64 --decode > "${key_path}"
           mkdir -p "${RUNNER_TEMP}/fastlane"
-          cat > "${RUNNER_TEMP}/fastlane/api_key.json" <<JSON
-          {
-            "key_id": "${ASC_KEY_ID}",
-            "issuer_id": "${ASC_ISSUER_ID}",
-            "key_filepath": "${key_path}",
-            "in_house": false
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          temp = Path(os.environ["RUNNER_TEMP"])
+          payload = {
+              "key_id": os.environ["ASC_KEY_ID"],
+              "issuer_id": os.environ["ASC_ISSUER_ID"],
+              "key": (temp / "appstoreconnect-api-key.p8").read_text(),
+              "in_house": False,
           }
-          JSON
+          (temp / "fastlane" / "api_key.json").write_text(json.dumps(payload))
+          PY
           sudo gem install fastlane --no-document
           ipa_path="$(find build/export -maxdepth 1 -name '*.ipa' -print -quit)"
           [[ -n "${ipa_path}" ]] || { echo 'IPA was not exported' >&2; exit 1; }
@@ -220,14 +226,20 @@ jobs:
           key_path="${RUNNER_TEMP}/appstoreconnect-api-key.p8"
           echo "${ASC_KEY_BASE64}" | base64 --decode > "${key_path}"
           mkdir -p "${RUNNER_TEMP}/fastlane"
-          cat > "${RUNNER_TEMP}/fastlane/api_key.json" <<JSON
-          {
-            "key_id": "${ASC_KEY_ID}",
-            "issuer_id": "${ASC_ISSUER_ID}",
-            "key_filepath": "${key_path}",
-            "in_house": false
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          temp = Path(os.environ["RUNNER_TEMP"])
+          payload = {
+              "key_id": os.environ["ASC_KEY_ID"],
+              "issuer_id": os.environ["ASC_ISSUER_ID"],
+              "key": (temp / "appstoreconnect-api-key.p8").read_text(),
+              "in_house": False,
           }
-          JSON
+          (temp / "fastlane" / "api_key.json").write_text(json.dumps(payload))
+          PY
           sudo gem install fastlane --no-document
           fastlane deliver \
             --submit_for_review true \
