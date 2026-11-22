@@ -161,8 +161,12 @@ final class KeyboardViewController: UIInputViewController {
     private func updateAutomaticShift() {
         guard keyboardState.layer == .letters, !keyboardState.isCapsLocked else { return }
         let before = textDocumentProxy.documentContextBeforeInput ?? ""
+        guard let autocapitalizationType = textDocumentProxy.autocapitalizationType else {
+            keyboardState.isShifted = false
+            return
+        }
         let shouldShift: Bool
-        switch textDocumentProxy.autocapitalizationType {
+        switch autocapitalizationType {
         case .none:
             shouldShift = false
         case .allCharacters:
