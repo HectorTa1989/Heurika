@@ -122,6 +122,22 @@ jobs:
       - name: Generate the Xcode project
         run: xcodegen generate
 
+      - name: Verify release signing settings
+        run: |
+          set -euo pipefail
+          for target in Heurika HeurikaKeyboard; do
+            xcodebuild -showBuildSettings \
+              -project Heurika.xcodeproj \
+              -target "$target" \
+              -configuration Release \
+              -sdk iphoneos \
+              DEVELOPMENT_TEAM="${APPLE_TEAM_ID}" \
+              APPLE_TEAM_ID="${APPLE_TEAM_ID}" \
+              HEURIKA_APP_PROFILE_NAME="${APP_PROFILE_NAME}" \
+              HEURIKA_KEYBOARD_PROFILE_NAME="${KEYBOARD_PROFILE_NAME}" \
+              | grep -E 'CODE_SIGN_IDENTITY|CODE_SIGN_STYLE|PROVISIONING_PROFILE_SPECIFIER' || true
+          done
+
       - name: Archive the app and keyboard extension
         run: |
           set -euo pipefail
