@@ -16,7 +16,10 @@ final class PreviewFlowTests: XCTestCase {
 
         app.buttons["Set Up Keyboard"].tap()
         pause(2)
-        app.switches.firstMatch.tap()
+        let consentSwitch = app.switches.firstMatch
+        XCTAssertTrue(consentSwitch.waitForExistence(timeout: 5))
+        consentSwitch.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.5)).tap()
+        XCTAssertEqual(consentSwitch.value as? String, "1")
         let consentContinue = app.buttons["Continue"]
         let enabled = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "enabled == true"),
@@ -29,6 +32,13 @@ final class PreviewFlowTests: XCTestCase {
 
         XCTAssertTrue(app.tabBars.buttons["Home"].waitForExistence(timeout: 10))
         pause(3)
+        let scratchpad = app.descendants(matching: .any)["previewScratchpad"]
+        XCTAssertTrue(scratchpad.waitForExistence(timeout: 5))
+        scratchpad.tap()
+        scratchpad.typeText("Can you send the slides by friday?")
+        pause(3)
+        app.swipeUp()
+        pause(2)
         app.tabBars.buttons["Deeds"].tap()
         pause(3)
         app.tabBars.buttons["Settings"].tap()

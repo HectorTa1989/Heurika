@@ -8,6 +8,7 @@ on:
       - .github/workflows/capture-preview.yml
       - HeurikaUITests/**
       - project.yml
+      - Heurika/Features/Home/HomeView.swift
 
 permissions:
   contents: read

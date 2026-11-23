@@ -110,6 +110,7 @@ struct HomeView: View {
                 .foregroundStyle(HeurikaColor.espressoSoft)
 
             TextField("Type something…", text: $viewModel.scratchpadText, axis: .vertical)
+                .accessibilityIdentifier("previewScratchpad")
                 .lineLimit(3...6)
                 .font(HeurikaFont.body(16))
                 .padding(HeurikaTheme.Spacing.md)
