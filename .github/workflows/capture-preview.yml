@@ -1,0 +1,95 @@
+name: Capture iPhone App Preview
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  record:
+    runs-on: macos-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode with an installed iOS Simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          for candidate in $(find /Applications -maxdepth 1 -type d -name 'Xcode*.app' | sort -Vr); do
+            if compgen -G "$candidate/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator*.sdk" > /dev/null; then
+              sudo xcode-select -s "$candidate"
+              break
+            fi
+          done
+          xcodebuild -version
+          xcrun simctl list devices available
+
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen >/dev/null 2>&1; then brew install xcodegen; fi
+          xcodegen generate
+
+      - name: Choose iPhone simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          udid="$(xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin)["devices"]; xs=[x for group in d.values() for x in group if x["name"].startswith("iPhone") and x["state"]=="Shutdown"]; xs.sort(key=lambda x: ("Pro" not in x["name"], "Max" in x["name"])); print(xs[0]["udid"] if xs else "")')"
+          test -n "$udid"
+          echo "SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
+          xcrun simctl boot "$udid"
+          xcrun simctl bootstatus "$udid" -b
+          xcrun simctl status_bar "$udid" override --time '9:41' --dataNetwork wifi --wifiMode active --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
+
+      - name: Build UI walkthrough
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild build-for-testing \
+            -project Heurika.xcodeproj -scheme Heurika -configuration Debug \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+            -derivedDataPath "$RUNNER_TEMP/HeurikaDerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            HEURIKA_REVENUECAT_API_KEY='preview-only' \
+            HEURIKA_PRIVACY_POLICY_URL='https://github.com/HectorTa1989/Heurika-public/blob/main/PRIVACY.md' \
+            HEURIKA_TERMS_OF_USE_URL='https://github.com/HectorTa1989/Heurika-public/blob/main/TERMS.md' \
+            HEURIKA_SUPPORT_URL='https://github.com/HectorTa1989/Heurika-public/blob/main/SUPPORT.md' \
+            | tee preview-build.log
+
+      - name: Record real app walkthrough
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p demo
+          xcrun simctl io "$SIMULATOR_UDID" recordVideo --codec=h264 demo/Heurika-iPhone-raw.mp4 > preview-record.log 2>&1 &
+          recorder=$!
+          sleep 3
+          set +e
+          xcodebuild test-without-building \
+            -project Heurika.xcodeproj -scheme Heurika \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+            -derivedDataPath "$RUNNER_TEMP/HeurikaDerivedData" \
+            -only-testing:HeurikaUITests/PreviewFlowTests/testPreviewFlow \
+            -parallel-testing-enabled NO \
+            -resultBundlePath "$PWD/demo/PreviewFlow.xcresult" \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee preview-test.log
+          test_result=${PIPESTATUS[0]}
+          set -e
+          kill -INT "$recorder" || true
+          wait "$recorder" || true
+          test "$test_result" -eq 0
+          test -s demo/Heurika-iPhone-raw.mp4
+
+      - name: Upload captured footage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: heurika-iphone-preview-${{ github.run_number }}
+          path: |
+            demo/Heurika-iPhone-raw.mp4
+            preview-build.log
+            preview-test.log
+            preview-record.log
+          if-no-files-found: warn

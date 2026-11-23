@@ -38,6 +38,9 @@ targets:
   Heurika:
     type: application
     platform: iOS
+    scheme:
+      testTargets:
+        - HeurikaUITests
     sources:
       - path: Heurika
     entitlements:
@@ -96,6 +99,20 @@ targets:
     dependencies:
       - package: HeurikaCore
         product: HeurikaCore
+
+  HeurikaUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: HeurikaUITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.heurika.app.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: Heurika
+        CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: Heurika
 
 # NOTE on testing: HeurikaCoreTests lives inside the local Swift package
 # (Packages/HeurikaCore) rather than as a native Xcode test target, so it's
