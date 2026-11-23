@@ -19,20 +19,13 @@ final class PreviewFlowTests: XCTestCase {
         app.buttons["Open Settings"].tap()
         let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
         XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 10))
-        let search = settings.buttons["Search"].firstMatch
-        XCTAssertTrue(search.waitForExistence(timeout: 10), settings.debugDescription)
-        search.tap()
-        let searchField = settings.searchFields["Search Apps"].firstMatch
-        XCTAssertTrue(searchField.waitForExistence(timeout: 10), settings.debugDescription)
-        searchField.typeText("Heurika")
-        let heurikaApp = settings.buttons["Heurika AI Keyboard"].firstMatch
-        XCTAssertTrue(heurikaApp.waitForExistence(timeout: 10), settings.debugDescription)
-        heurikaApp.tap()
-        print("HEURIKA APP SETTINGS: \(settings.debugDescription)")
-        let keyboards = settings.buttons["Keyboards"].firstMatch
-        XCTAssertTrue(keyboards.waitForExistence(timeout: 10), settings.debugDescription)
-        keyboards.tap()
-        print("KEYBOARDS PAGE: \(settings.debugDescription)")
+        // iOS 26's Settings cells sometimes report an invalid activation point
+        // to XCTest and scroll to a different section. Tap the visible row.
+        settings.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.365)).tap()
+        let keyboard = settings.buttons["Keyboard"].firstMatch
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 10), settings.debugDescription)
+        keyboard.tap()
+        print("KEYBOARD SETTINGS: \(settings.debugDescription)")
     }
 
     func testPreviewFlow() {
