@@ -19,10 +19,19 @@ final class PreviewFlowTests: XCTestCase {
         app.buttons["Open Settings"].tap()
         let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
         XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 10))
-        print("APP SETTINGS: \(settings.debugDescription)")
-        let keyboards = settings.staticTexts["Keyboards"].firstMatch
-        XCTAssertTrue(keyboards.waitForExistence(timeout: 10), settings.debugDescription)
-        keyboards.tap()
+        if settings.buttons["Keyboards"].firstMatch.exists {
+            settings.buttons["Keyboards"].firstMatch.tap()
+        } else {
+            let general = settings.buttons["General"].firstMatch
+            XCTAssertTrue(general.waitForExistence(timeout: 10), settings.debugDescription)
+            general.tap()
+            let keyboard = settings.buttons["Keyboard"].firstMatch
+            XCTAssertTrue(keyboard.waitForExistence(timeout: 10), settings.debugDescription)
+            keyboard.tap()
+            let keyboards = settings.buttons["Keyboards"].firstMatch
+            XCTAssertTrue(keyboards.waitForExistence(timeout: 10), settings.debugDescription)
+            keyboards.tap()
+        }
         print("KEYBOARDS SETTINGS: \(settings.debugDescription)")
     }
 
