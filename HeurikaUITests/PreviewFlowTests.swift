@@ -19,12 +19,15 @@ final class PreviewFlowTests: XCTestCase {
         app.buttons["Open Settings"].tap()
         let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
         XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 10))
-        // iOS 26's Settings cells sometimes report an invalid activation point
-        // to XCTest and scroll to a different section. Tap the visible row.
-        settings.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.365)).tap()
+        // iOS 26's Settings cells sometimes report an invalid activation point.
+        // A coordinate anchored to the actual row avoids XCTest's retry scroll.
+        let general = settings.buttons["General"].firstMatch
+        XCTAssertTrue(general.waitForExistence(timeout: 10), settings.debugDescription)
+        general.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        print("GENERAL SETTINGS: \(settings.debugDescription)")
         let keyboard = settings.buttons["Keyboard"].firstMatch
         XCTAssertTrue(keyboard.waitForExistence(timeout: 10), settings.debugDescription)
-        keyboard.tap()
+        keyboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         print("KEYBOARD SETTINGS: \(settings.debugDescription)")
     }
 
