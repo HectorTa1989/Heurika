@@ -17,7 +17,13 @@ final class PreviewFlowTests: XCTestCase {
         app.buttons["Set Up Keyboard"].tap()
         pause(2)
         app.switches.firstMatch.tap()
-        app.buttons["Continue"].tap()
+        let consentContinue = app.buttons["Continue"]
+        let enabled = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "enabled == true"),
+            object: consentContinue
+        )
+        XCTAssertEqual(XCTWaiter.wait(for: [enabled], timeout: 8), .completed)
+        consentContinue.tap()
         pause(2)
         app.buttons["I'll do this later"].tap()
 
