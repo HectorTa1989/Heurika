@@ -22,14 +22,13 @@ final class PreviewFlowTests: XCTestCase {
         let search = settings.buttons["Search"].firstMatch
         XCTAssertTrue(search.waitForExistence(timeout: 10), settings.debugDescription)
         search.tap()
-        let searchField = settings.searchFields["Search"].firstMatch
+        let searchField = settings.searchFields["Search Apps"].firstMatch
         XCTAssertTrue(searchField.waitForExistence(timeout: 10), settings.debugDescription)
-        searchField.typeText("Keyboard")
-        print("KEYBOARD SEARCH: \(settings.debugDescription)")
-        let keyboardResult = settings.buttons["Keyboard"].firstMatch
-        XCTAssertTrue(keyboardResult.waitForExistence(timeout: 10), settings.debugDescription)
-        keyboardResult.tap()
-        print("KEYBOARD PAGE: \(settings.debugDescription)")
+        searchField.typeText("Heurika")
+        let heurikaApp = settings.buttons["Heurika AI Keyboard"].firstMatch
+        XCTAssertTrue(heurikaApp.waitForExistence(timeout: 10), settings.debugDescription)
+        heurikaApp.tap()
+        print("HEURIKA APP SETTINGS: \(settings.debugDescription)")
         let keyboards = settings.buttons["Keyboards"].firstMatch
         XCTAssertTrue(keyboards.waitForExistence(timeout: 10), settings.debugDescription)
         keyboards.tap()
