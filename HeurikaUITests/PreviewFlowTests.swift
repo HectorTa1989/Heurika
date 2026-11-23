@@ -19,20 +19,21 @@ final class PreviewFlowTests: XCTestCase {
         app.buttons["Open Settings"].tap()
         let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
         XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 10))
-        if settings.buttons["Keyboards"].firstMatch.exists {
-            settings.buttons["Keyboards"].firstMatch.tap()
-        } else {
-            let general = settings.buttons["General"].firstMatch
-            XCTAssertTrue(general.waitForExistence(timeout: 10), settings.debugDescription)
-            general.tap()
-            let keyboard = settings.buttons["Keyboard"].firstMatch
-            XCTAssertTrue(keyboard.waitForExistence(timeout: 10), settings.debugDescription)
-            keyboard.tap()
-            let keyboards = settings.buttons["Keyboards"].firstMatch
-            XCTAssertTrue(keyboards.waitForExistence(timeout: 10), settings.debugDescription)
-            keyboards.tap()
-        }
-        print("KEYBOARDS SETTINGS: \(settings.debugDescription)")
+        let search = settings.buttons["Search"].firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 10), settings.debugDescription)
+        search.tap()
+        let searchField = settings.searchFields["Search"].firstMatch
+        XCTAssertTrue(searchField.waitForExistence(timeout: 10), settings.debugDescription)
+        searchField.typeText("Keyboard")
+        print("KEYBOARD SEARCH: \(settings.debugDescription)")
+        let keyboardResult = settings.buttons["Keyboard"].firstMatch
+        XCTAssertTrue(keyboardResult.waitForExistence(timeout: 10), settings.debugDescription)
+        keyboardResult.tap()
+        print("KEYBOARD PAGE: \(settings.debugDescription)")
+        let keyboards = settings.buttons["Keyboards"].firstMatch
+        XCTAssertTrue(keyboards.waitForExistence(timeout: 10), settings.debugDescription)
+        keyboards.tap()
+        print("KEYBOARDS PAGE: \(settings.debugDescription)")
     }
 
     func testPreviewFlow() {
