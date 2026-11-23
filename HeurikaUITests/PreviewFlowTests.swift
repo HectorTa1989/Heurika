@@ -19,14 +19,14 @@ final class PreviewFlowTests: XCTestCase {
         app.buttons["Open Settings"].tap()
         let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
         XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 10))
-        // iOS 26's Settings cells sometimes report an invalid activation point.
-        // A coordinate anchored to the actual row avoids XCTest's retry scroll.
-        // Settings' General row is currently centered at y=406 on this
-        // 402×874 simulator. A root-window coordinate bypasses the bad
-        // accessibility activation point returned by the table cell.
-        settings.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.465)).tap()
+        // iOS 26 opens the Apps list for this deep link. Heurika is visible
+        // there, so enter its settings page directly instead of navigating
+        // through General, whose table cell has a broken XCTest hit point.
+        let heurikaSettings = settings.buttons["Heurika AI Keyboard"].firstMatch
+        XCTAssertTrue(heurikaSettings.waitForExistence(timeout: 10), settings.debugDescription)
+        heurikaSettings.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         pause(2)
-        print("GENERAL SETTINGS: \(settings.debugDescription)")
+        print("HEURIKA SETTINGS: \(settings.debugDescription)")
         let keyboard = settings.buttons["Keyboard"].firstMatch
         XCTAssertTrue(keyboard.waitForExistence(timeout: 10), settings.debugDescription)
         keyboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
